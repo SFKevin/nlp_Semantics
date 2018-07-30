@@ -123,7 +123,6 @@ _PAD = "_PAD"
 _UNK = "UNK"
 from collections import Counter
 from nltk.tokenize import word_tokenize
-from gensim.models import KeyedVectors
 
 
 def create_vocabulary(x_text):
@@ -151,7 +150,7 @@ def create_vocabulary(x_text):
 import pickle
 
 
-def asign_pretrained_word_embedding(vocabulary_index2word, vocab_size):
+def asign_pretrained_word_embedding():
     # word2vec_model = KeyedVectors.load_word2vec_format(w2v_pah, binary=True)
     # word2vec_model = KeyedVectors.load_word2vec_format(fast_path)
     # word2vec_dict = {}
@@ -182,7 +181,7 @@ def asign_pretrained_word_embedding(vocabulary_index2word, vocab_size):
     # word_embedding_final = np.array(word_embedding_2dlist)
     # print("not exist: %d" % count_not_exist)
     # return word_embedding_final, not_exist
-    with open('embed.pickle', 'rb') as f:
+    with open('I:\\nlp_semantics\\text_match\\en\\data_utils\\embed.pickle', 'rb') as f:
         embed = pickle.load(f)
     return np.array(embed)
 
