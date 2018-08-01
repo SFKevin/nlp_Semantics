@@ -116,20 +116,20 @@ def train(x_train1, x_dev1, x_train2, x_dev2, y_train, y_dev, word_embedding, ma
             sess.run(t_assign_embedding)
 
             # Keep track of gradient values and sparity
-            grad_summaries = []
-            for g, v in grads_and_vars:
-                if g is not None:
-                    grad_hist_summary = tf.summary.histogram("{}/grad/hist".format(v.name), g)
-                    sparsity_summary = tf.summary.scalar("{}/grad/sparsity".format(v.name), tf.nn.zero_fraction(g))
-                    grad_summaries.append(grad_hist_summary)
-                    grad_summaries.append(sparsity_summary)
-            grad_summaries_merged = tf.summary.merge(grad_summaries)
+            # grad_summaries = []
+            # for g, v in grads_and_vars:
+            #     if g is not None and v is not None:
+            #         grad_hist_summary = tf.summary.histogram("{}/grad/hist".format(v.name), g)
+            #         sparsity_summary = tf.summary.scalar("{}/grad/sparsity".format(v.name), tf.nn.zero_fraction(g))
+            #         grad_summaries.append(grad_hist_summary)
+            #         grad_summaries.append(sparsity_summary)
+            # grad_summaries_merged = tf.summary.merge(grad_summaries)
             timestamp = str(int(time.time()))
             out_dir = os.path.abspath(os.path.join(os.path.curdir, "runs", timestamp))
 
             loss_summary = tf.summary.scalar("loss", rnn.loss_val)
-
-            train_summary_op = tf.summary.merge([loss_summary, grad_summaries_merged])
+            train_summary_op = loss_summary
+            # train_summary_op = tf.summary.merge([loss_summary, grad_summaries_merged])
             train_summary_dir = os.path.join(out_dir, "summaries", "train")
             train_summary_writer = tf.summary.FileWriter(train_summary_dir, sess.graph)
 

@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 from text_match.en.data_utils import datahelper
 from tflearn.data_utils import pad_sequences
-from text_match.en.models.mv_rnn.mvrnn_cos import MV_RNN
+from text_match.en.models.mv_rnn.mvrnn_cntn import MV_RNN
 import datetime
 import os
 import time
@@ -24,7 +24,7 @@ tf.flags.DEFINE_float("dropout_keep_prob", 0.5, "Dropout keep probability (defau
 tf.flags.DEFINE_float("l2_reg_lambda", 0.0, "L2 regularization lambda (default: 0.0)")
 
 # Training parameters
-tf.flags.DEFINE_integer("batch_size", 128, "Batch Size (default: 64)")
+tf.flags.DEFINE_integer("batch_size", 64, "Batch Size (default: 64)")
 tf.flags.DEFINE_integer("num_epochs", 100, "Number of training epochs (default: 200)")
 tf.flags.DEFINE_integer("evaluate_every", 10, "Evaluate model on dev set after this many steps (default: 100)")
 tf.flags.DEFINE_integer("checkpoint_every", 100, "Save model after this many steps (default: 100)")
@@ -135,7 +135,7 @@ def train(x_train1, x_dev1, x_train2, x_dev2, y_train, y_dev, word_embedding, ma
 
             sess.run(tf.global_variables_initializer())
 
-            checkpoint_dir = os.path.abspath(os.path.join(os.path.curdir, "checkpoint", timestamp + "_cos"))
+            checkpoint_dir = os.path.abspath(os.path.join(os.path.curdir, "checkpoint", timestamp + "_cntn"))
             if not os.path.exists(checkpoint_dir):
                 os.makedirs(checkpoint_dir)
             log_file = checkpoint_dir + "\\log.txt"

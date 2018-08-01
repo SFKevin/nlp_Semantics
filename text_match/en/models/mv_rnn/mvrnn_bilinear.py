@@ -48,21 +48,17 @@ class MV_RNN:
 
             self.outputs2_rnn = tf.concat(outputs2, axis=2)
 
-        with tf.variable_scope("bilinear"):
-            self.rnn1 = tf.split(self.outputs1_rnn, self.sequence_length, axis=1, name="split1")
-            self.Mat = tf.get_variable(name="M", shape=[2 * self.hidden_size, 2 * self.hidden_size], dtype=tf.float32,
-                                       initializer=self.initializer)
-            matual_by_m = []
-            for i in range(self.sequence_length):
-                self.rnn1_sq = tf.squeeze(self.rnn1[i], axis=1)
-                matual_by_m1 = tf.matmul(self.rnn1_sq, self.Mat)
-                matual_by_m.append(matual_by_m1)
-            self.matual_mid0 = tf.stack(matual_by_m, axis=1)
-            self.matual_mid1 = tf.matmul(self.matual_mid0, self.outputs2_rnn, transpose_b=True)
-            self.bias = tf.get_variable("biase", [1], dtype=tf.float32, initializer=tf.zeros_initializer())
-            self.bilinear_out = tf.add(self.matual_mid1, self.bias, "add_bias")
-            self.kmax = tf.nn.top_k(self.bilinear_out, k=8, name="k-max-pool")
-            self.inputs = tf.layers.flatten(self.kmax[0], name="flatten")
+        self.Mat = tf.get_variable(name="M", shape=[2 * self.hidden_size, 2 * self.hidden_size], dtype=tf.float32,
+                                   initializer=tf.contrib.layers.xavier_initializer())
+        self.mid0 = tf.einsum('abc,cd->abd', self.outputs1_rnn, self.Mat)
+        self.outputs2_rnn_trop = tf.transpose(self.outputs2_rnn, [0, 2, 1])
+        self.matual_mid1 = tf.matmul(self.mid0, self.outputs2_rnn_trop)
+        self.bias = tf.get_variable("biase", [1], dtype=tf.float32, initializer=tf.zeros_initializer())
+        self.bilinear_out = tf.add(self.matual_mid1, self.bias, "add_bias")
+        self.out = tf.nn.relu(self.bilinear_out)
+        self.kmax = tf.nn.top_k(self.out, k=8, name="k-max-pool")
+        self.inputs = tf.layers.flatten(self.kmax[0], name="flatten")
+
         with tf.variable_scope("outputs"):
             self.fc1 = tf.layers.dense(self.inputs, 256, activation=tf.nn.relu)
             self.fc1 = tf.nn.dropout(self.fc1, keep_prob=self.dropout_keep_prob)

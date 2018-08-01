@@ -101,7 +101,7 @@ def train(x_train1, x_dev1, x_train2, x_dev2, y_train, y_dev, word_embedding, ma
             optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
             grads_and_vars = optimizer.compute_gradients(rnn.loss_val)
 
-            grads_and_vars_clip = [(tf.clip_by_value(grad, FLAGS.clip_grad_down, FLAGS.clip_grad_up), var) for grad, var
+            grads_and_vars_clip = [(tf.clip_by_value(grad, -5, 5), var) for grad, var
                                    in
                                    grads_and_vars]
 
@@ -135,7 +135,7 @@ def train(x_train1, x_dev1, x_train2, x_dev2, y_train, y_dev, word_embedding, ma
 
             sess.run(tf.global_variables_initializer())
 
-            checkpoint_dir = os.path.abspath(os.path.join(os.path.curdir, "checkpoint", timestamp + "_bn"))
+            checkpoint_dir = os.path.abspath(os.path.join(os.path.curdir, "checkpoint", timestamp + "_bilinear"))
             if not os.path.exists(checkpoint_dir):
                 os.makedirs(checkpoint_dir)
             log_file = checkpoint_dir + "\\log.txt"
