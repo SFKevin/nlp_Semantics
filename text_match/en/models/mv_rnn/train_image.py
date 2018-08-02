@@ -100,7 +100,12 @@ def train(x_train1, x_dev1, x_train2, x_dev2, y_train, y_dev, word_embedding, ma
 
             optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
             grads_and_vars = optimizer.compute_gradients(rnn.loss_val)
-            train_op = optimizer.apply_gradients(grads_and_vars, global_step=rnn.global_step)
+
+            grads_and_vars_clip = [(tf.clip_by_value(grad, -5, 5), var) for grad, var
+                                   in
+                                   grads_and_vars]
+
+            train_op = optimizer.apply_gradients(grads_and_vars_clip, global_step=rnn.global_step)
 
             embedding = tf.constant(word_embedding, tf.float32)
             t_assign_embedding = tf.assign(rnn.Embedding, embedding)

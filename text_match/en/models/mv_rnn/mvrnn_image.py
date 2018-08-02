@@ -51,7 +51,7 @@ class MV_RNN:
             # with tf.variable_scope("cos"):
             self.dot_wise = tf.matmul(self.outputs1_rnn, self.outputs2_rnn, transpose_b=True, name="matual")
             self.dot_wise_exp = tf.expand_dims(self.dot_wise, axis=-1)
-        with tf.variable_scope("conv1") as scope:
+        with tf.variable_scope("conv1"):
             self.conv1 = tf.layers.conv2d(self.dot_wise_exp, filters=128, kernel_size=3, strides=[1, 1], padding="SAME",
                                           use_bias=True,
                                           kernel_initializer=tf.contrib.layers.xavier_initializer(), name="conv1")
@@ -98,7 +98,7 @@ class MV_RNN:
     def loss(self):
         self.loss = tf.losses.log_loss(labels=self.input_y, predictions=self.logits, weights=self.weights,
                                        reduction="weighted_mean")
-        self.l2_losses = tf.add_n([tf.nn.l2_loss(v) for v in tf.trainable_variables()]) * 0.0001
+        self.l2_losses = tf.add_n([tf.nn.l2_loss(v) for v in tf.trainable_variables()]) * 0.01
         return self.loss + self.l2_losses
 
     def instantiate_weights(self):
