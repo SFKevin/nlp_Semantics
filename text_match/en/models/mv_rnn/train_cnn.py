@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 from text_match.en.data_utils import datahelper
 from tflearn.data_utils import pad_sequences
-from text_match.en.models.rnn.rnn_model import rnn_dot
+from text_match.en.models.mv_rnn.mvrnn_cnn import MV_RNN
 import datetime
 import os
 import time
@@ -19,7 +19,6 @@ tf.flags.DEFINE_string("sp_train", "E:\\CIKM2018\\cikm_spanish_train_20180516.tx
                        "sp_train")
 tf.flags.DEFINE_string("stop_word", "E:\\CIKM2018\\spanish_stop_word.txt",
                        "stop_word")
-
 tf.flags.DEFINE_float("dev_sample_percentage", 0.1, "Percentage of the training data to use for validation")
 tf.flags.DEFINE_float("learning_rate", 0.01, "learning_rate")
 
@@ -99,20 +98,26 @@ def train(x_train1, x_dev1, x_train2, x_dev2, y_train, y_dev, word_embedding, ma
                                       log_device_placement=FLAGS.log_device_placement)
         sess = tf.Session(config=session_conf)
         with sess.as_default():
-            rnn = rnn_dot(FLAGS.learning_rate, FLAGS.batch_size, FLAGS.decay_steps, FLAGS.decay_rate, max_len,
-                          FLAGS.hidden_size, vocab_size, FLAGS.embedding_dim)
+            rnn = MV_RNN(FLAGS.learning_rate, FLAGS.batch_size, FLAGS.decay_steps, FLAGS.decay_rate, max_len,
+                         FLAGS.hidden_size, vocab_size, FLAGS.embedding_dim)
 
             learning_rate = tf.train.exponential_decay(rnn.learning_rate, rnn.global_step, rnn.decay_steps,
                                                        rnn.decay_rate, staircase=True)
 
             optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
             grads_and_vars = optimizer.compute_gradients(rnn.loss_val)
-            train_op = optimizer.apply_gradients(grads_and_vars, global_step=rnn.global_step)
+
+            grads_and_vars_clip = [(tf.clip_by_value(grad, -5, 5), var) for grad, var
+                                   in
+                                   grads_and_vars]
+
+            train_op = optimizer.apply_gradients(grads_and_vars_clip, global_step=rnn.global_step)
 
             embedding = tf.constant(word_embedding, tf.float32)
             t_assign_embedding = tf.assign(rnn.Embedding, embedding)
             sess.run(t_assign_embedding)
 
+            # Keep track of gradient values and sparity
             grad_summaries = []
             for g, v in grads_and_vars:
                 if g is not None:
@@ -136,7 +141,7 @@ def train(x_train1, x_dev1, x_train2, x_dev2, y_train, y_dev, word_embedding, ma
 
             sess.run(tf.global_variables_initializer())
 
-            checkpoint_dir = os.path.abspath(os.path.join(os.path.curdir, "checkpoint", timestamp + "_bn"))
+            checkpoint_dir = os.path.abspath(os.path.join(os.path.curdir, "checkpoint", timestamp + "_cnn"))
             if not os.path.exists(checkpoint_dir):
                 os.makedirs(checkpoint_dir)
             log_file = checkpoint_dir + "\\log.txt"
@@ -165,13 +170,20 @@ def train(x_train1, x_dev1, x_train2, x_dev2, y_train, y_dev, word_embedding, ma
                 train_summary_writer.add_summary(summaries, step)
 
             def dev_step(x_batch1, x_batch2, y_batch):
-                weights_d = []
-                for i in range(len(y_batch)):
-                    weights_d.append(1)
-                feed_dict = {rnn.is_training: False, rnn.input_x1: x_batch1, rnn.input_x2: x_batch2,
-                             rnn.input_y: y_batch,
-                             rnn.dropout_keep_prob: 1.0, rnn.weights: weights_d}
-                summaries, step, loss = sess.run([dev_summary_op, rnn.global_step, rnn.loss_val], feed_dict)
+                total_loss = []
+                step = 0
+                test_batch = datahelper.batch_iter(list(zip(x_batch1, x_batch2, y_batch)), FLAGS.batch_size, 1)
+                for test_data in test_batch:
+                    x_dev_batch1, x_dev_batch2, y_dev_batch = zip(*test_data)
+                    weights_d = []
+                    for i in range(len(y_dev_batch)):
+                        weights_d.append(1.0)
+                    feed_dict = {rnn.is_training: False, rnn.input_x1: x_dev_batch1, rnn.input_x2: x_dev_batch2,
+                                 rnn.input_y: y_dev_batch,
+                                 rnn.dropout_keep_prob: 1.0, rnn.weights: weights_d}
+                    summaries, step, loss = sess.run([dev_summary_op, rnn.global_step, rnn.loss], feed_dict)
+                    total_loss.append(loss)
+                loss = np.mean(total_loss, axis=0)
                 time_str = datetime.datetime.now().isoformat()
                 print("Test: {}:step {}, loss: {:g}".format(time_str, step, loss))
                 log_write.write("Test: {}: step {}, loss {:g}.\n".format(time_str, step, loss))
