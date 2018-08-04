@@ -33,38 +33,36 @@ class Cnn_1d:
         self.input_x2_embed = tf.nn.embedding_lookup(self.Embedding, self.input_x2)
         self.input_x1_exp = tf.expand_dims(self.input_x1_embed, -1)
         self.input_x2_exp = tf.expand_dims(self.input_x2_embed, -1)
-        with tf.device('/cpu:0'):
-            with tf.variable_scope("conv1") as scope:
-                self.conv1_1 = tf.layers.conv2d(self.input_x1_exp, filters=24, kernel_size=[1, self.embed_size],
-                                                strides=[1, 1], padding='SAME', activation=tf.nn.relu,
-                                                kernel_initializer=tf.variance_scaling_initializer(), name="conv1")
-                self.globa1_1 = tf.keras.layers.GlobalAveragePooling2D()(self.conv1_1)
-                scope.reuse_variables()
-                self.conv1_2 = tf.layers.conv2d(self.input_x2_exp, filters=24, kernel_size=[1, self.embed_size],
-                                                strides=[1, 1], padding='SAME', activation=tf.nn.relu,
-                                                kernel_initializer=tf.variance_scaling_initializer(), name="conv1")
-                self.globa1_2 = tf.keras.layers.GlobalAveragePooling2D()(self.conv1_2)
-            with tf.variable_scope("conv2") as scope:
-                self.conv2_1 = tf.layers.conv2d(self.input_x1_exp, filters=24, kernel_size=[2, self.embed_size],
-                                                strides=[1, 1], padding='SAME', activation=tf.nn.relu,
-                                                kernel_initializer=tf.variance_scaling_initializer(), name="conv2")
-                self.globa2_1 = tf.keras.layers.GlobalAveragePooling2D()(self.conv2_1)
-                scope.reuse_variables()
-                self.conv2_2 = tf.layers.conv2d(self.input_x2_exp, filters=24, kernel_size=[2, self.embed_size],
-                                                strides=[1, 1], padding='SAME', activation=tf.nn.relu,
-                                                kernel_initializer=tf.variance_scaling_initializer(), name="conv2")
-                self.globa2_2 = tf.keras.layers.GlobalAveragePooling2D()(self.conv2_2)
-        with tf.device("gpu:0"):
-            with tf.variable_scope("conv3") as scope:
-                self.conv3_1 = tf.layers.conv2d(self.input_x1_exp, filters=24, kernel_size=[3, self.embed_size],
-                                                strides=[1, 1], padding='SAME', activation=tf.nn.relu,
-                                                kernel_initializer=tf.variance_scaling_initializer(), name="conv3")
-                self.globa3_1 = tf.keras.layers.GlobalAveragePooling2D()(self.conv3_1)
-                scope.reuse_variables()
-                self.conv3_2 = tf.layers.conv2d(self.input_x2_exp, filters=24, kernel_size=[3, self.embed_size],
-                                                strides=[1, 1], padding='SAME', activation=tf.nn.relu,
-                                                kernel_initializer=tf.variance_scaling_initializer(), name="conv3")
-                self.globa3_2 = tf.keras.layers.GlobalAveragePooling2D()(self.conv3_2)
+        with tf.variable_scope("conv1") as scope:
+            self.conv1_1 = tf.layers.conv2d(self.input_x1_exp, filters=64, kernel_size=[1, self.embed_size],
+                                            strides=[1, 1], padding='SAME', activation=tf.nn.relu,
+                                            kernel_initializer=tf.variance_scaling_initializer(), name="conv1")
+            self.globa1_1 = tf.keras.layers.GlobalAveragePooling2D()(self.conv1_1)
+            scope.reuse_variables()
+            self.conv1_2 = tf.layers.conv2d(self.input_x2_exp, filters=64, kernel_size=[1, self.embed_size],
+                                            strides=[1, 1], padding='SAME', activation=tf.nn.relu,
+                                            kernel_initializer=tf.variance_scaling_initializer(), name="conv1")
+            self.globa1_2 = tf.keras.layers.GlobalAveragePooling2D()(self.conv1_2)
+        with tf.variable_scope("conv2") as scope:
+            self.conv2_1 = tf.layers.conv2d(self.input_x1_exp, filters=64, kernel_size=[2, self.embed_size],
+                                            strides=[1, 1], padding='SAME', activation=tf.nn.relu,
+                                            kernel_initializer=tf.variance_scaling_initializer(), name="conv2")
+            self.globa2_1 = tf.keras.layers.GlobalAveragePooling2D()(self.conv2_1)
+            scope.reuse_variables()
+            self.conv2_2 = tf.layers.conv2d(self.input_x2_exp, filters=64, kernel_size=[2, self.embed_size],
+                                            strides=[1, 1], padding='SAME', activation=tf.nn.relu,
+                                            kernel_initializer=tf.variance_scaling_initializer(), name="conv2")
+            self.globa2_2 = tf.keras.layers.GlobalAveragePooling2D()(self.conv2_2)
+        with tf.variable_scope("conv3") as scope:
+            self.conv3_1 = tf.layers.conv2d(self.input_x1_exp, filters=64, kernel_size=[3, self.embed_size],
+                                            strides=[1, 1], padding='SAME', activation=tf.nn.relu,
+                                            kernel_initializer=tf.variance_scaling_initializer(), name="conv3")
+            self.globa3_1 = tf.keras.layers.GlobalAveragePooling2D()(self.conv3_1)
+            scope.reuse_variables()
+            self.conv3_2 = tf.layers.conv2d(self.input_x2_exp, filters=64, kernel_size=[3, self.embed_size],
+                                            strides=[1, 1], padding='SAME', activation=tf.nn.relu,
+                                            kernel_initializer=tf.variance_scaling_initializer(), name="conv3")
+            self.globa3_2 = tf.keras.layers.GlobalAveragePooling2D()(self.conv3_2)
 
         # with tf.variable_scope("conv4") as scope:
         #     self.conv4_1 = tf.layers.conv2d(self.input_x1_exp, filters=128, kernel_size=[4, self.embed_size],

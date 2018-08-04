@@ -1,16 +1,14 @@
-# filepath_en_train = "E:\\CIKM2018\\cikm_english_train_20180516\\cikm_english_train_20180516.txt"
-# filepath_sp_train = "E:\\CIKM2018\\cikm_spanish_train_20180516.txt"
-# filepath_test = "E:\\CIKM2018\\cikm_test_a_20180516.txt"
-# filepath_unlabel = "E:\\CIKM2018\\cikm_unlabel_spanish_train_20180516\\cikm_unlabel_spanish_train_20180516.txt"
-# w2v_pah = "E:\\CIKM2018\\w2v.model.bin"
-# fast_path = "E:\\CIKM2018\\fast_text_vectors_wiki.es.vec\\wiki.es.vec"
-filepath_en_train = "I:\\CIKM\\cikm_english_train_20180516\\cikm_english_train_20180516.txt"
-filepath_sp_train = "I:\\CIKM\\cikm_spanish_train_20180516.txt"
-filepath_test = "I:\\CIKM\\cikm_test_a_20180516.txt"
-filepath_unlabel = "I:\\CIKM\\cikm_unlabel_spanish_train_20180516\\cikm_unlabel_spanish_train_20180516.txt"
-w2v_pah = "I:\\CIKM\\GoogleNews-vectors-negative300.bin"
-fast_path = "I:\\CIKM\\fast_text_vectors_wiki.en.vec\\wiki.en.vec"
-file_stop_word = "I:\\CIKM\\spanish_stop_word.txt"
+filepath_en_train = "E:\\CIKM2018\\cikm_english_train_20180516\\cikm_english_train_20180516.txt"
+filepath_sp_train = "E:\\CIKM2018\\cikm_spanish_train_20180516.txt"
+filepath_test = "E:\\CIKM2018\\cikm_test_a_20180516.txt"
+filepath_unlabel = "E:\\CIKM2018\\cikm_unlabel_spanish_train_20180516\\cikm_unlabel_spanish_train_20180516.txt"
+# filepath_en_train = "I:\\CIKM\\cikm_english_train_20180516\\cikm_english_train_20180516.txt"
+# filepath_sp_train = "I:\\CIKM\\cikm_spanish_train_20180516.txt"
+# filepath_test = "I:\\CIKM\\cikm_test_a_20180516.txt"
+# filepath_unlabel = "I:\\CIKM\\cikm_unlabel_spanish_train_20180516\\cikm_unlabel_spanish_train_20180516.txt"
+# w2v_pah = "I:\\CIKM\\GoogleNews-vectors-negative300.bin"
+# fast_path = "I:\\CIKM\\fast_text_vectors_wiki.en.vec\\wiki.en.vec"
+# file_stop_word = "I:\\CIKM\\spanish_stop_word.txt"
 
 import numpy as np
 import re
@@ -181,7 +179,7 @@ def asign_pretrained_word_embedding():
     # word_embedding_final = np.array(word_embedding_2dlist)
     # print("not exist: %d" % count_not_exist)
     # return word_embedding_final, not_exist
-    with open('I:\\nlp_semantics\\text_match\\en\\data_utils\\embed.pickle', 'rb') as f:
+    with open('E:\\nlp_semantics\\text_match\\en\\data_utils\\embed.pickle', 'rb') as f:
         embed = pickle.load(f)
     return np.array(embed)
 

@@ -7,15 +7,15 @@ import datetime
 import os
 import time
 
-tf.flags.DEFINE_string("en_train", "I:\\CIKM\\cikm_english_train_20180516\\cikm_english_train_20180516.txt",
-                       "en_train not found ")
-tf.flags.DEFINE_string("sp_train", "I:\\CIKM\\cikm_spanish_train_20180516.txt",
-                       "sp_train")
-#
-# tf.flags.DEFINE_string("en_train", "E:\\CIKM2018\\cikm_english_train_20180516\\cikm_english_train_20180516.txt",
+# tf.flags.DEFINE_string("en_train", "I:\\CIKM\\cikm_english_train_20180516\\cikm_english_train_20180516.txt",
 #                        "en_train not found ")
-# tf.flags.DEFINE_string("sp_train", "E:\\CIKM2018\\cikm_spanish_train_20180516.txt",
+# tf.flags.DEFINE_string("sp_train", "I:\\CIKM\\cikm_spanish_train_20180516.txt",
 #                        "sp_train")
+
+tf.flags.DEFINE_string("en_train", "E:\\CIKM2018\\cikm_english_train_20180516\\cikm_english_train_20180516.txt",
+                       "en_train not found ")
+tf.flags.DEFINE_string("sp_train", "E:\\CIKM2018\\cikm_spanish_train_20180516.txt",
+                       "sp_train")
 tf.flags.DEFINE_float("dev_sample_percentage", 0.1, "Percentage of the training data to use for validation")
 tf.flags.DEFINE_float("learning_rate", 0.01, "learning_rate")
 
