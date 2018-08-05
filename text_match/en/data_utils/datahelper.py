@@ -14,6 +14,7 @@ import numpy as np
 import re
 from string import punctuation
 from nltk.corpus import stopwords
+import pandas as pd
 
 stop_words = set(stopwords.words("english"))
 import nltk
@@ -39,6 +40,38 @@ def load_data(en_train, sp_train):
     x_train1 = [x[0].strip() for x in x_train]
     x_train2 = [x[1].strip() for x in x_train]
 
+    return x_train1, x_train2, y_train
+
+
+def load_data_over(en_train, sp_train):
+    en_train = list(open(en_train, "r", encoding='UTF-8').readlines())
+    sp_train = list(open(sp_train, "r", encoding='UTF-8').readlines())
+
+    en_train_list = [line.strip().replace("\n", "").split("\t") for line in en_train]
+    sp_train_list = [line.strip().replace("\n", "").split("\t") for line in sp_train]
+
+    sp_pair_en = [[x[0].lower().strip(), x[2].lower().strip()] for x in en_train_list]
+    sp_score_en = [x[4].lower().strip() for x in en_train_list]
+
+    sp_pair_sp = [[x[1].lower().strip(), x[2].lower().strip()] for x in sp_train_list]
+    sp_score_sp = [x[4].lower().strip() for x in sp_train_list]
+    x_train = np.concatenate([sp_pair_en, sp_pair_sp], axis=0)
+    y_train = sp_score_en + sp_score_sp
+    y_train = [int(y) for y in y_train]
+    y_train = np.array(y_train)
+
+    x_train1 = [x[0].strip() for x in x_train]
+    x_train2 = [x[1].strip() for x in x_train]
+    data = pd.DataFrame()
+    data['x1'] = x_train1
+    data['x2'] = x_train2
+    data['y'] = y_train
+    y1 = data[data['y'] == 1]
+    y1_sample = y1.sample(frac=0.5, axis=0)
+    data_over = pd.concat([data, y1_sample], axis=0)
+    x_train1 = data_over['x1'].values
+    x_train2 = data_over['x2'].values
+    y_train = data_over['y'].values
     return x_train1, x_train2, y_train
 
 
@@ -179,7 +212,7 @@ def asign_pretrained_word_embedding():
     # word_embedding_final = np.array(word_embedding_2dlist)
     # print("not exist: %d" % count_not_exist)
     # return word_embedding_final, not_exist
-    with open('I:\\nlp_semantics\\text_match\\en\\data_utils\\embed.pickle', 'rb') as f:
+    with open('E:\\nlp_semantics\\text_match\\en\\data_utils\\embed.pickle', 'rb') as f:
         embed = pickle.load(f)
     return np.array(embed)
 

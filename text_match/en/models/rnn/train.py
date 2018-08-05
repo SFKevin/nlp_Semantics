@@ -52,7 +52,7 @@ _UNK = "UNK"
 
 
 def process():
-    x_text1, x_text2, y_train = datahelper.load_data(FLAGS.en_train, FLAGS.sp_train)
+    x_text1, x_text2, y_train = datahelper.load_data_over(FLAGS.en_train, FLAGS.sp_train)
     x_text = np.concatenate([x_text1, x_text2], axis=0)
     word2index, index2word = datahelper.create_vocabulary(x_text)
     vocab_size = len(index2word)
@@ -136,7 +136,7 @@ def train(x_train1, x_dev1, x_train2, x_dev2, y_train, y_dev, word_embedding, ma
 
             sess.run(tf.global_variables_initializer())
 
-            checkpoint_dir = os.path.abspath(os.path.join(os.path.curdir, "checkpoint", timestamp + "_bn"))
+            checkpoint_dir = os.path.abspath(os.path.join(os.path.curdir, "checkpoint", timestamp + "_bn_over"))
             if not os.path.exists(checkpoint_dir):
                 os.makedirs(checkpoint_dir)
             log_file = checkpoint_dir + "\\log.txt"
