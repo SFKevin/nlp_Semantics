@@ -124,5 +124,5 @@ class rnn_dot:
     def loss(self):
         self.loss = tf.losses.log_loss(labels=self.input_y, predictions=self.logits,
                                        reduction="weighted_mean")
-        self.l2_losses = tf.add_n([tf.nn.l2_loss(v) for v in tf.trainable_variables()]) * 0.001
+        self.l2_losses = tf.add_n([tf.nn.l2_loss(v) for v in tf.trainable_variables()]) * 0.01
         return self.loss + self.l2_losses

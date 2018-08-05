@@ -7,18 +7,18 @@ import datetime
 import os
 import time
 
-# tf.flags.DEFINE_string("en_train", "I:\\CIKM\\cikm_english_train_20180516\\cikm_english_train_20180516.txt",
-#                        "en_train not found ")
-# tf.flags.DEFINE_string("sp_train", "I:\\CIKM\\cikm_spanish_train_20180516.txt",
-#                        "sp_train")
-# tf.flags.DEFINE_string("stop_word", "I:\\CIKM\\spanish_stop_word.txt",
-#                        "stop_word")
-tf.flags.DEFINE_string("en_train", "E:\\CIKM2018\\cikm_english_train_20180516\\cikm_english_train_20180516.txt",
+tf.flags.DEFINE_string("en_train", "I:\\CIKM\\cikm_english_train_20180516\\cikm_english_train_20180516.txt",
                        "en_train not found ")
-tf.flags.DEFINE_string("sp_train", "E:\\CIKM2018\\cikm_spanish_train_20180516.txt",
+tf.flags.DEFINE_string("sp_train", "I:\\CIKM\\cikm_spanish_train_20180516.txt",
                        "sp_train")
-tf.flags.DEFINE_string("stop_word", "E:\\CIKM2018\\spanish_stop_word.txt",
+tf.flags.DEFINE_string("stop_word", "I:\\CIKM\\spanish_stop_word.txt",
                        "stop_word")
+# tf.flags.DEFINE_string("en_train", "E:\\CIKM2018\\cikm_english_train_20180516\\cikm_english_train_20180516.txt",
+#                        "en_train not found ")
+# tf.flags.DEFINE_string("sp_train", "E:\\CIKM2018\\cikm_spanish_train_20180516.txt",
+#                        "sp_train")
+# tf.flags.DEFINE_string("stop_word", "E:\\CIKM2018\\spanish_stop_word.txt",
+#                        "stop_word")
 
 tf.flags.DEFINE_float("dev_sample_percentage", 0.1, "Percentage of the training data to use for validation")
 tf.flags.DEFINE_float("learning_rate", 0.01, "learning_rate")
@@ -136,7 +136,7 @@ def train(x_train1, x_dev1, x_train2, x_dev2, y_train, y_dev, word_embedding, ma
 
             sess.run(tf.global_variables_initializer())
 
-            checkpoint_dir = os.path.abspath(os.path.join(os.path.curdir, "checkpoint", timestamp + "_bn"))
+            checkpoint_dir = os.path.abspath(os.path.join(os.path.curdir, "checkpoint", timestamp + "_cnn"))
             if not os.path.exists(checkpoint_dir):
                 os.makedirs(checkpoint_dir)
             log_file = checkpoint_dir + "\\log.txt"
@@ -155,7 +155,7 @@ def train(x_train1, x_dev1, x_train2, x_dev2, y_train, y_dev, word_embedding, ma
                 feed_dict = {rnn.is_training: True, rnn.input_x1: x_batch1, rnn.input_x2: x_batch2,
                              rnn.input_y: y_batch,
                              rnn.dropout_keep_prob: FLAGS.dropout_keep_prob, rnn.weights: weights_t}
-                summaries, _, step, loss = sess.run([train_summary_op, train_op, rnn.global_step, rnn.loss_val],
+                summaries, _, step, loss = sess.run([train_summary_op, train_op, rnn.global_step, rnn.loss],
                                                     feed_dict)
                 time_str = datetime.datetime.now().isoformat()
                 print("Train: {}: step {}, loss {:g}. ".format(time_str, step, loss))
@@ -165,13 +165,20 @@ def train(x_train1, x_dev1, x_train2, x_dev2, y_train, y_dev, word_embedding, ma
                 train_summary_writer.add_summary(summaries, step)
 
             def dev_step(x_batch1, x_batch2, y_batch):
-                weights_d = []
-                for i in range(len(y_batch)):
-                    weights_d.append(1)
-                feed_dict = {rnn.is_training: False, rnn.input_x1: x_batch1, rnn.input_x2: x_batch2,
-                             rnn.input_y: y_batch,
-                             rnn.dropout_keep_prob: 1.0, rnn.weights: weights_d}
-                summaries, step, loss = sess.run([dev_summary_op, rnn.global_step, rnn.loss_val], feed_dict)
+                total_loss = []
+                step = 0
+                test_batch = datahelper.batch_iter(list(zip(x_batch1, x_batch2, y_batch)), FLAGS.batch_size, 1)
+                for test_data in test_batch:
+                    x_dev_batch1, x_dev_batch2, y_dev_batch = zip(*test_data)
+                    weights_d = []
+                    for i in range(len(y_dev_batch)):
+                        weights_d.append(1.0)
+                    feed_dict = {rnn.is_training: False, rnn.input_x1: x_dev_batch1, rnn.input_x2: x_dev_batch2,
+                                 rnn.input_y: y_dev_batch,
+                                 rnn.dropout_keep_prob: 1.0, rnn.weights: weights_d}
+                    summaries, step, loss = sess.run([dev_summary_op, rnn.global_step, rnn.loss], feed_dict)
+                    total_loss.append(loss)
+                loss = np.mean(total_loss, axis=0)
                 time_str = datetime.datetime.now().isoformat()
                 print("Test: {}:step {}, loss: {:g}".format(time_str, step, loss))
                 log_write.write("Test: {}: step {}, loss {:g}.\n".format(time_str, step, loss))

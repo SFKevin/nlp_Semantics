@@ -179,7 +179,7 @@ def asign_pretrained_word_embedding():
     # word_embedding_final = np.array(word_embedding_2dlist)
     # print("not exist: %d" % count_not_exist)
     # return word_embedding_final, not_exist
-    with open('E:\\nlp_semantics\\text_match\\en\\data_utils\\embed.pickle', 'rb') as f:
+    with open('I:\\nlp_semantics\\text_match\\en\\data_utils\\embed.pickle', 'rb') as f:
         embed = pickle.load(f)
     return np.array(embed)
 
