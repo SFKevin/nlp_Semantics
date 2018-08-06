@@ -2,23 +2,23 @@ import tensorflow as tf
 import numpy as np
 from text_match.en.data_utils import datahelper
 from tflearn.data_utils import pad_sequences
-from text_match.en.models.rnn.rnn_model import rnn_dot
+from text_match.en.models.rnn.rnn_modelsoftmax import rnn_dot
 import datetime
 import os
 import time
 
-# tf.flags.DEFINE_string("en_train", "I:\\CIKM\\cikm_english_train_20180516\\cikm_english_train_20180516.txt",
-#                        "en_train not found ")
-# tf.flags.DEFINE_string("sp_train", "I:\\CIKM\\cikm_spanish_train_20180516.txt",
-#                        "sp_train")
-# tf.flags.DEFINE_string("stop_word", "I:\\CIKM\\spanish_stop_word.txt",
-#                        "stop_word")
-tf.flags.DEFINE_string("en_train", "E:\\CIKM2018\\cikm_english_train_20180516\\cikm_english_train_20180516.txt",
+tf.flags.DEFINE_string("en_train", "I:\\CIKM\\cikm_english_train_20180516\\cikm_english_train_20180516.txt",
                        "en_train not found ")
-tf.flags.DEFINE_string("sp_train", "E:\\CIKM2018\\cikm_spanish_train_20180516.txt",
+tf.flags.DEFINE_string("sp_train", "I:\\CIKM\\cikm_spanish_train_20180516.txt",
                        "sp_train")
-tf.flags.DEFINE_string("stop_word", "E:\\CIKM2018\\spanish_stop_word.txt",
+tf.flags.DEFINE_string("stop_word", "I:\\CIKM\\spanish_stop_word.txt",
                        "stop_word")
+# tf.flags.DEFINE_string("en_train", "E:\\CIKM2018\\cikm_english_train_20180516\\cikm_english_train_20180516.txt",
+#                        "en_train not found ")
+# tf.flags.DEFINE_string("sp_train", "E:\\CIKM2018\\cikm_spanish_train_20180516.txt",
+#                        "sp_train")
+# tf.flags.DEFINE_string("stop_word", "E:\\CIKM2018\\spanish_stop_word.txt",
+#                        "stop_word")
 
 tf.flags.DEFINE_float("dev_sample_percentage", 0.1, "Percentage of the training data to use for validation")
 tf.flags.DEFINE_float("learning_rate", 0.01, "learning_rate")
@@ -136,7 +136,7 @@ def train(x_train1, x_dev1, x_train2, x_dev2, y_train, y_dev, word_embedding, ma
 
             sess.run(tf.global_variables_initializer())
 
-            checkpoint_dir = os.path.abspath(os.path.join(os.path.curdir, "checkpoint", timestamp + "_bn_over"))
+            checkpoint_dir = os.path.abspath(os.path.join(os.path.curdir, "checkpoint", timestamp + "_softmax_over"))
             if not os.path.exists(checkpoint_dir):
                 os.makedirs(checkpoint_dir)
             log_file = checkpoint_dir + "\\log.txt"

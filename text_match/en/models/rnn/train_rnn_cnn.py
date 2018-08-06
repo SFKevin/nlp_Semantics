@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 from text_match.en.data_utils import datahelper
 from tflearn.data_utils import pad_sequences
-from text_match.en.models.rnn.rnn_model_cnn import rnn_dot
+from text_match.en.models.rnn.rnn_model_cnn_softmax import rnn_dot
 import datetime
 import os
 import time
@@ -136,7 +136,7 @@ def train(x_train1, x_dev1, x_train2, x_dev2, y_train, y_dev, word_embedding, ma
 
             sess.run(tf.global_variables_initializer())
 
-            checkpoint_dir = os.path.abspath(os.path.join(os.path.curdir, "checkpoint", timestamp + "_cnn"))
+            checkpoint_dir = os.path.abspath(os.path.join(os.path.curdir, "checkpoint", timestamp + "_cnn_softmax"))
             if not os.path.exists(checkpoint_dir):
                 os.makedirs(checkpoint_dir)
             log_file = checkpoint_dir + "\\log.txt"

@@ -67,7 +67,7 @@ def load_data_over(en_train, sp_train):
     data['x2'] = x_train2
     data['y'] = y_train
     y1 = data[data['y'] == 1]
-    y1_sample = y1.sample(frac=0.5, axis=0)
+    y1_sample = y1.sample(frac=0.05, axis=0)
     data_over = pd.concat([data, y1_sample], axis=0)
     x_train1 = data_over['x1'].values
     x_train2 = data_over['x2'].values
@@ -212,7 +212,7 @@ def asign_pretrained_word_embedding():
     # word_embedding_final = np.array(word_embedding_2dlist)
     # print("not exist: %d" % count_not_exist)
     # return word_embedding_final, not_exist
-    with open('E:\\nlp_semantics\\text_match\\en\\data_utils\\embed.pickle', 'rb') as f:
+    with open('I:\\nlp_semantics\\text_match\\en\\data_utils\\embed.pickle', 'rb') as f:
         embed = pickle.load(f)
     return np.array(embed)
 
