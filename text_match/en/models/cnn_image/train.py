@@ -2,19 +2,19 @@ import tensorflow as tf
 import numpy as np
 from text_match.en.data_utils import datahelper
 from tflearn.data_utils import pad_sequences
-from text_match.en.models.cnn_image.CNN_model import cnn_text
+from text_match.en.models.cnn_image.CNN_model_topk import cnn_text
 import datetime
 import os
 import time
 
-tf.flags.DEFINE_string("en_train", "I:\\CIKM\\cikm_english_train_20180516\\cikm_english_train_20180516.txt",
-                       "en_train not found ")
-tf.flags.DEFINE_string("sp_train", "I:\\CIKM\\cikm_spanish_train_20180516.txt",
-                       "sp_train")
-# tf.flags.DEFINE_string("en_train", "E:\\CIKM2018\\cikm_english_train_20180516\\cikm_english_train_20180516.txt",
+# tf.flags.DEFINE_string("en_train", "I:\\CIKM\\cikm_english_train_20180516\\cikm_english_train_20180516.txt",
 #                        "en_train not found ")
-# tf.flags.DEFINE_string("sp_train", "E:\\CIKM2018\\cikm_spanish_train_20180516.txt",
+# tf.flags.DEFINE_string("sp_train", "I:\\CIKM\\cikm_spanish_train_20180516.txt",
 #                        "sp_train")
+tf.flags.DEFINE_string("en_train", "E:\\CIKM2018\\cikm_english_train_20180516\\cikm_english_train_20180516.txt",
+                       "en_train not found ")
+tf.flags.DEFINE_string("sp_train", "E:\\CIKM2018\\cikm_spanish_train_20180516.txt",
+                       "sp_train")
 tf.flags.DEFINE_float("dev_sample_percentage", 0.1, "Percentage of the training data to use for validation")
 tf.flags.DEFINE_float("learning_rate", 0.01, "learning_rate")
 
@@ -27,7 +27,7 @@ tf.flags.DEFINE_float("l2_reg_lambda", 0.0, "L2 regularization lambda (default: 
 tf.flags.DEFINE_float("clip_grad_up", 5.0, "clip_grad_up")
 tf.flags.DEFINE_float("clip_grad_down", -5.0, "clip_grad_down")
 # Training parameters
-tf.flags.DEFINE_integer("batch_size", 128, "Batch Size (default: 64)")
+tf.flags.DEFINE_integer("batch_size", 64, "Batch Size (default: 64)")
 tf.flags.DEFINE_integer("num_epochs", 100, "Number of training epochs (default: 200)")
 tf.flags.DEFINE_integer("evaluate_every", 10, "Evaluate model on dev set after this many steps (default: 100)")
 tf.flags.DEFINE_integer("checkpoint_every", 100, "Save model after this many steps (default: 100)")
@@ -139,7 +139,7 @@ def train(x_train1, x_dev1, x_train2, x_dev2, y_train, y_dev, word_embedding, ma
 
             sess.run(tf.global_variables_initializer())
 
-            checkpoint_dir = os.path.abspath(os.path.join(os.path.curdir, "checkpoint", timestamp + "batch64"))
+            checkpoint_dir = os.path.abspath(os.path.join(os.path.curdir, "checkpoint", timestamp + "_cos"))
             if not os.path.exists(checkpoint_dir):
                 os.makedirs(checkpoint_dir)
             log_file = checkpoint_dir + "\\log.txt"
