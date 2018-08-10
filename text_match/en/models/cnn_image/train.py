@@ -2,19 +2,19 @@ import tensorflow as tf
 import numpy as np
 from text_match.en.data_utils import datahelper
 from tflearn.data_utils import pad_sequences
-from text_match.en.models.cnn_image.CNN_model_maxpool import cnn_text
+from text_match.en.models.cnn_image.CNN_model_res import cnn_text
 import datetime
 import os
 import time
 
-tf.flags.DEFINE_string("en_train", "I:\\CIKM\\cikm_english_train_20180516\\cikm_english_train_20180516.txt",
-                       "en_train not found ")
-tf.flags.DEFINE_string("sp_train", "I:\\CIKM\\cikm_spanish_train_20180516.txt",
-                       "sp_train")
-# tf.flags.DEFINE_string("en_train", "E:\\CIKM2018\\cikm_english_train_20180516\\cikm_english_train_20180516.txt",
+# tf.flags.DEFINE_string("en_train", "I:\\CIKM\\cikm_english_train_20180516\\cikm_english_train_20180516.txt",
 #                        "en_train not found ")
-# tf.flags.DEFINE_string("sp_train", "E:\\CIKM2018\\cikm_spanish_train_20180516.txt",
-# "sp_train")
+# tf.flags.DEFINE_string("sp_train", "I:\\CIKM\\cikm_spanish_train_20180516.txt",
+#                        "sp_train")
+tf.flags.DEFINE_string("en_train", "E:\\CIKM2018\\cikm_english_train_20180516\\cikm_english_train_20180516.txt",
+                       "en_train not found ")
+tf.flags.DEFINE_string("sp_train", "E:\\CIKM2018\\cikm_spanish_train_20180516.txt",
+                       "sp_train")
 tf.flags.DEFINE_float("dev_sample_percentage", 0.1, "Percentage of the training data to use for validation")
 tf.flags.DEFINE_float("learning_rate", 0.01, "learning_rate")
 
@@ -36,7 +36,7 @@ tf.flags.DEFINE_integer("num_checkpoints", 5, "Number of checkpoints to store (d
 tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device placement")
 tf.flags.DEFINE_boolean("log_device_placement", True, "Log placement of ops on devices")
 tf.flags.DEFINE_string("word2vec_model_path", "I:\\CIKM\\w2v.model.bin",
-"Goole News Vector")
+                       "Goole News Vector")
 tf.flags.DEFINE_integer("decay_steps", 12000, "how many steps before deacy learning rate")
 tf.flags.DEFINE_float("decay_rate", 0.9, "rate of decay for learning rate.")
 FLAGS = tf.flags.FLAGS
@@ -139,7 +139,7 @@ def train(x_train1, x_dev1, x_train2, x_dev2, y_train, y_dev, word_embedding, ma
 
             sess.run(tf.global_variables_initializer())
 
-            checkpoint_dir = os.path.abspath(os.path.join(os.path.curdir, "checkpoint", timestamp + "_maxpool"))
+            checkpoint_dir = os.path.abspath(os.path.join(os.path.curdir, "checkpoint", timestamp + "_res"))
             if not os.path.exists(checkpoint_dir):
                 os.makedirs(checkpoint_dir)
             log_file = checkpoint_dir + "\\log.txt"
